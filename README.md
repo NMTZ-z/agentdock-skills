@@ -6,9 +6,11 @@
 
 **v1.1.0 已提供通用设计流程；当前 v1.1.1 整理了通用入口和使用说明。** 适用于具备图像生成／编辑能力的 Agent，不绑定 GPT、Agent 平台、模型厂商或某种订阅。使用你已经拥有的绘图工具即可；支持参考图和局部编辑的工具更适合保留原照。
 
-![公开授权照片制作的赛里木湖示例](examples/sayram/poster.png)
+![喀纳斯月亮湾：作者旅行实拍延伸成第二世界](examples/moon-bay/poster.png)
 
-[查看原片与来源](examples/sayram/ATTRIBUTION.md) · [下载当前版本](https://github.com/NMTZ-z/travel-in-the-second-world/releases/latest)
+喀纳斯月亮湾｜原照片由项目作者拍摄，海报经 AI 辅助编辑。旅人坐在干燥岸边，河水延伸进纸上的第二世界。
+
+[示例来源与展示授权](examples/moon-bay/ATTRIBUTION.md) · [下载当前版本](https://github.com/NMTZ-z/travel-in-the-second-world/releases/latest)
 
 ## 我该怎么用？
 
@@ -46,6 +48,6 @@ Skill 提供的是设计、编辑和验收方法，实际出图由 Agent 使用�
 
 先让原图结构准确连接，再改变物理规则；每张只做一个互动，大面积留白，不靠模糊掩盖接缝。默认保留原照片的主体、关系与色彩；用户允许后才调整氛围。缩放裁切或生成式重绘不称为无损保留。
 
-完整工作规则见 [SKILL.md](skills/create-second-world-posters/SKILL.md)，实际测试范围与限制见 [验证记录](docs/VALIDATION.md)。示例使用公开授权照片，未公开用户私有旅行照片。
+完整工作规则见 [SKILL.md](skills/create-second-world-posters/SKILL.md)，实际测试范围与限制见 [验证记录](docs/VALIDATION.md)。主页使用作者本人确认公开展示的月亮湾海报；离线工具演示仍使用公开授权的赛里木湖素材。
 
-代码与文档采用 [Apache-2.0](LICENSE)；示例原片的授权见 [来源说明](examples/sayram/ATTRIBUTION.md)。
+代码与文档采用 [Apache-2.0](LICENSE)；主页图片的授权见 [月亮湾来源说明](examples/moon-bay/ATTRIBUTION.md)，离线演示素材的授权见 [赛里木湖来源说明](examples/sayram/ATTRIBUTION.md)。
