@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>选择水面运动范围</title>
+<style>
+body{margin:24px;background:#f8f4ec;color:#263342;font:15px/1.65 system-ui,sans-serif}main{max-width:1080px;margin:auto}h1{font-size:25px}button,select{padding:9px 14px;margin:4px;border:1px solid #b2b9b9;border-radius:6px;background:white;color:#263342;font-size:14px}button:disabled{opacity:.4}canvas{width:min(100%,650px);height:auto;display:block;background:#eee;cursor:crosshair;touch-action:none}section{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}.panel{flex:1;min-width:240px;max-width:350px}#message{min-height:48px;color:#3f5961}.note{font-size:13px;color:#657070}label{display:block}details{margin-top:16px}
+</style><main>
+<h1>只让水动，岸边留在原处</h1>
+<p>这页在本地运行，不上传图片。沿水面轮廓逐点点击，完成一块后点「闭合轮廓」。树枝、人物、文字和岸线应留在运动范围外。</p>
+<section><canvas id="view" width="__IMAGE_WIDTH__" height="__IMAGE_HEIGHT__"></canvas><div class="panel">
+<label>当前操作 <select id="mode"><option value="water">圈出水面</option><option value="protect">扣除固定区域</option><option value="flow">画水流方向（起点→终点）</option></select></label>
+<button id="finish">闭合轮廓</button><button id="undo">撤销一步</button><button id="clear">重新选择</button>
+<p id="message">先圈出一块真实水面。只靠颜色不能区分水、天空和树林。</p>
+<label><input id="showmask" type="checkbox"> 查看黑白运动遮罩</label>
+<p><button id="mask" disabled>保存 water_mask.png</button><button id="config" disabled>保存 motion.json</button></p>
+<p class="note">把两个下载文件和 poster.png 放在同一个任务文件夹，再执行动画命令。蓝色覆盖区域会动；红色扣除区和其它区域完全固定。</p>
+<details><summary>怎样避免树林跟着动？</summary><p>水面轮廓不应包含岸地；用「扣除固定区域」圈出挡在水前的枝叶、小人、文字和支撑物。小人臀部与脚必须在干燥岸上。可以分别圈出多块水面；所有水面使用同一个流向。弯河、多向流不适合这版脚本。</p></details>
+<details><summary>水流很轻或者检查失败？</summary><p>默认水纹行程换算到手机约为16像素，边缘在水面内部平滑渐弱。窄水带实际运动会更轻；不要为了加大幅度圈入岸地或关掉保护检查。先检查遮罩和流向，必要时由助手调整参数。</p></details>
+</div></section></main>
+<script>
+'use strict';
+const W=__IMAGE_WIDTH__,H=__IMAGE_HEIGHT__,view=document.querySelector('#view'),ctx=view.getContext('2d');
+const source=new Image();source.src='data:image/png;base64,__IMAGE_DATA__';
+let shapes=[],draft=[],flow=[],mode='water';
+const message=document.querySelector('#message');
+const path=(c,points)=>{c.beginPath();points.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();};
+function maskCanvas(){const c=document.createElement('canvas');c.width=W;c.height=H;const m=c.getContext('2d');m.fillStyle='black';m.fillRect(0,0,W,H);for(const type of ['water','protect']){m.fillStyle=type==='water'?'white':'black';for(const s of shapes.filter(x=>x.type===type)){path(m,s.points);m.fill();}}return c;}
+function draw(){ctx.clearRect(0,0,W,H);if(document.querySelector('#showmask').checked){ctx.drawImage(maskCanvas(),0,0);}else{ctx.drawImage(source,0,0);for(const s of shapes){path(ctx,s.points);ctx.fillStyle=s.type==='water'?'rgba(0,150,220,.32)':'rgba(220,50,40,.55)';ctx.fill();}}ctx.lineWidth=Math.max(2,W/350);ctx.strokeStyle=mode==='protect'?'#f44':'#06f';if(draft.length){ctx.beginPath();draft.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.stroke();for(const p of draft){ctx.beginPath();ctx.arc(...p,W/220,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.stroke();}}if(flow.length){ctx.strokeStyle='#ffdc27';ctx.beginPath();ctx.moveTo(...flow[0]);if(flow.length===2){ctx.lineTo(...flow[1]);const a=Math.atan2(flow[1][1]-flow[0][1],flow[1][0]-flow[0][0]),r=W/40;ctx.moveTo(flow[1][0]-r*Math.cos(a-.5),flow[1][1]-r*Math.sin(a-.5));ctx.lineTo(...flow[1]);ctx.lineTo(flow[1][0]-r*Math.cos(a+.5),flow[1][1]-r*Math.sin(a+.5));}ctx.stroke();}const valid=draft.length===0&&shapes.some(x=>x.type==='water')&&flow.length===2&&Math.hypot(flow[1][0]-flow[0][0],flow[1][1]-flow[0][1])>8;for(const id of ['mask','config'])document.querySelector('#'+id).disabled=!valid;}
+source.onload=draw;
+view.addEventListener('pointerdown',e=>{const r=view.getBoundingClientRect(),p=[Math.max(0,Math.min(W-1,(e.clientX-r.left)*W/r.width)),Math.max(0,Math.min(H-1,(e.clientY-r.top)*H/r.height))];if(mode==='flow'){if(flow.length===2)flow=[];flow.push(p);message.textContent=flow.length===1?'再点一个下游方向的终点。':'流向已选；核对水面和固定区域后保存两个文件。';}else{draft.push(p);message.textContent=`已选择 ${draft.length} 个点；至少3点后闭合轮廓。`;}draw();});
+document.querySelector('#mode').onchange=e=>{if(draft.length){message.textContent='请先闭合当前轮廓，或撤销所有未闭合的点。';e.target.value=mode;return;}mode=e.target.value;draw();};
+document.querySelector('#finish').onclick=()=>{if(draft.length<3){message.textContent='轮廓至少需要3个点。';return;}shapes.push({type:mode,points:draft});draft=[];message.textContent='轮廓已闭合。继续圈选或切换到水流方向。';draw();};
+document.querySelector('#undo').onclick=()=>{if(draft.length)draft.pop();else if(mode==='flow'&&flow.length)flow.pop();else shapes.pop();draw();};
+document.querySelector('#clear').onclick=()=>{shapes=[];draft=[];flow=[];message.textContent='已清空选择；原照片没有变化。';draw();};
+document.querySelector('#showmask').onchange=draw;
+function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+document.querySelector('#mask').onclick=()=>maskCanvas().toBlob(blob=>download(blob,'water_mask.png'),'image/png');
+document.querySelector('#config').onclick=()=>{const ys=shapes.filter(x=>x.type==='water').flatMap(s=>s.points.map(p=>p[1]));const config={image_sha256:'__IMAGE_SHA256__',image_size:[W,H],bounds:[Math.max(0,(Math.min(...ys)-8)/H),Math.min(1,(Math.max(...ys)+8)/H)],water_mask:'water_mask.png',direction:[(flow[1][0]-flow[0][0])/W,(flow[1][1]-flow[0][1])/H],travel_pixels:Math.round(W*16/390),edge_fade_pixels:Math.round(W*.12)};download(new Blob([JSON.stringify(config,null,2)],{type:'application/json'}),'motion.json');};
+</script></html>

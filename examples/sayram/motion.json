@@ -1,0 +1,18 @@
+{
+  "image_sha256": "021e9d3ed08d0fcb26731fac7cf50a8a02b12ab1f32cfbc52aad8bc2bd9a22eb",
+  "image_size": [
+    1152,
+    1536
+  ],
+  "bounds": [
+    0.3547916624411051,
+    0.480208361503744
+  ],
+  "water_mask": "water_mask.png",
+  "direction": [
+    0.48000000000000004,
+    0.020000005634082108
+  ],
+  "travel_pixels": 47,
+  "edge_fade_pixels": 138
+}
