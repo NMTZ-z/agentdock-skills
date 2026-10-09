@@ -1,94 +1,51 @@
-# 第二世界旅行海报
+# Travel in the Second World
 
-旅行实拍 → 纸上世界 → **3:4 PNG + 恰好3秒 MP4**。每张独立设计，通常约60%原照、40%纸面，真实结构先连接，再完成一个小互动。
+**让一张旅行照片，继续走进纸上的第二世界。**
 
-**v1.1.0 已加入不用 GPT 的出图入口**：SenseNova U1.5 Lite 编辑图片，本地脚本制作水纹动画。可直接使用命令行，也能作为 Skill 安装到有文件执行能力的 AI 助手。无需 GPT 订阅或 OpenAI Key；新海报需要自己的 SenseNova Key 和可用额度。
+这是一份通用型 Agent Skill：从实拍中的道路、水面、阶梯等真实结构出发，延伸出温暖纸感的小世界，再安排一个轻巧的互动。每张照片独立设计，成品统一为 **3:4 竖幅**，通常约 **60% 原照、40% 纸上世界**，搭配地点相关的中文小字。
 
-这版是安装配置后可操作，还不是全自动一键成品：连接与文字要看图检查，水面需鼠标圈选。动画是二维纹理搬运，复杂人物动作和新视频模型尚未接入。
+**v1.1.0 已提供通用设计流程；当前 v1.1.1 整理了通用入口和使用说明。** 适用于具备图像生成／编辑能力的 Agent，不绑定 GPT、Agent 平台、模型厂商或某种订阅。使用你已经拥有的绘图工具即可；支持参考图和局部编辑的工具更适合保留原照。
 
-## 一次安装
+![公开授权照片制作的赛里木湖示例](examples/sayram/poster.png)
 
-下载并解压仓库，进入文件夹。需要 Python 3.10+ 与系统 FFmpeg（含 ffprobe，加入 PATH）：
+[查看原片与来源](examples/sayram/ATTRIBUTION.md) · [下载当前版本](https://github.com/NMTZ-z/travel-in-the-second-world/releases/latest)
 
-| 系统 | 安装示例 |
+## 我该怎么用？
+
+把下面这段话复制给你的 Agent，再上传照片并告诉它地点、喜欢的文案和修改要求。Agent 会读取规范、选择它能用的工具，然后开始设计。你不需要先学命令行或购买指定模型。
+
+```text
+请使用 Travel in the Second World：
+https://github.com/NMTZ-z/travel-in-the-second-world
+先阅读 README.md 和 skills/create-second-world-posters/SKILL.md；宿主支持 Skill 时按其规范加载，不支持时将这些文件作为工作指南。优先使用你已有的图像生成／编辑工具，不绑定特定厂商或模型，也不要把可选测试接口的 Key 当作前置条件。确认能读取原片、查看结果；仅在需要附带本地合成或动画脚本时准备隔离运行环境。
+我会上传旅行照片，并提供地点、文案及修改要求。每张独立设计成 3:4 竖幅：通常约 60% 原照、40% 象牙色纸上世界，从原图真实结构准确接续，只做一种转化和一个互动，保留关键主体与清晰度，角落文字优先中文。逐项检查融合、支撑与文字；不能把生成式重绘说成无损保留。
+有可用视频工具或文件执行能力时，再制作恰好 3 秒、动作连续且只在合理区域发生的局部动画，交付最终 PNG 和 MP4；没有视频能力则完成静态图并说明限制，不用静止视频充数。先读取规范并说明你当前可执行的路线，然后按我上传的照片开始。
+```
+
+也可单独打开 [Agent 启动说明](AGENT_START.md) 复制。能够安装 Skill 的宿主可加载 [核心目录](skills/create-second-world-posters) 或 Release 中的独立 Skill ZIP；具体安装入口由宿主决定。不能安装 Skill、但能够读取这些文件的 Agent，也可在当前任务中遵循同一流程。
+
+## 能得到什么？
+
+| Agent 当前能力 | 可完成的工作 |
 | --- | --- |
-| macOS | `brew install ffmpeg` |
-| Windows | `winget install --id Gyan.FFmpeg -e`，然后重新打开终端 |
-| Ubuntu / Debian | `sudo apt install ffmpeg python3-venv` |
+| 能读取照片、调用图像生成／编辑工具并查看结果 | 独立的第二世界静态海报 |
+| 另有文件合成或可靠局部编辑能力 | 更精确地复用原片、控制裁切和保护区域 |
+| 另有文件执行能力或已接通的视频工具 | 制作并检查恰好 3 秒的局部动态素材 |
 
-执行 `python3 bootstrap.py`（Windows 用 `python bootstrap.py`）。它创建 `.venv`、安装 Python 依赖并检查系统工具，不自动安装系统软件，不保存凭据。
+默认交付一张 PNG 与一个 3 秒 MP4；只做静态图、或 Agent 没有视频能力时交付 PNG。MP4 可供你后续转换 Live Photo，本项目不直接生成原生 Live Photo。
 
-以下 `PYTHON` 换成 macOS/Linux 的 `.venv/bin/python`，Windows 的 `.venv\Scripts\python.exe`：
+Skill 提供的是设计、编辑和验收方法，实际出图由 Agent 使用的模型完成。不同工具对局部编辑和原片保留的支持不同；仅能文生图的工具无法保证准确保留原照片。每张成品都要检查结构衔接、人物支撑和中文，不保证一次生成就通过。
 
-```bash
-PYTHON quickstart.py doctor
-PYTHON quickstart.py demo --out work/demo
-```
+## 动态与可选本地工具
 
-`demo` 使用附带授权示例，无需接口 Key。打开 `work/demo/poster_3s.mp4` 确认水纹可见，岸线与文字固定。示例原片和海报见 [examples/sayram](examples/sayram)。
+附带工具可制作经过验证的二维局部水纹动画：水动，岸线、树林、人物与文字保持稳定。需要先圈选水面和保护区；复杂人物动作、弯河或多向流可能不适合。当前没有统一接入视频生成模型。
 
-## 自己的照片，不用 GPT
+这些脚本是可选辅助，**不影响使用 Agent 自带绘图工具完成静态海报**。想在本地运行预览、离线圈选与三秒示例，可按 [本地工具说明](docs/LOCAL_TOOLS.md) 操作。具体服务接口只放在可选适配器参考中，通用流程不要求任何指定接口凭据。
 
-在 [SenseNova Token 平台](https://token.sensenova.cn/) 获取自己的 Key，额度、价格和模型可用性以平台为准，不承诺永久免费。凭据仅放在当前进程环境变量：
+## 设计原则与公开验证
 
-```bash
-# macOS / Linux
-export SENSENOVA_API_KEY='你的Key'
-```
+先让原图结构准确连接，再改变物理规则；每张只做一个互动，大面积留白，不靠模糊掩盖接缝。默认保留原照片的主体、关系与色彩；用户允许后才调整氛围。缩放裁切或生成式重绘不称为无损保留。
 
-```powershell
-# Windows PowerShell
-$env:SENSENOVA_API_KEY='你的Key'
-```
+完整工作规则见 [SKILL.md](skills/create-second-world-posters/SKILL.md)，实际测试范围与限制见 [验证记录](docs/VALIDATION.md)。示例使用公开授权照片，未公开用户私有旅行照片。
 
-`poster` 会把预排版照片上传到配置的 SenseNova 图片服务，消耗额度，不自动重试。不要提交 Key、终端截图或私人照片。
-
-1. **先看裁切**，此步骤不上传照片。默认保留下缘，照片占 .58，裁掉面积超过20%会停止。
-
-```bash
-PYTHON quickstart.py prepare photo.jpg --location "赛里木湖" --out work/my-poster
-```
-
-打开 `preview.png`，检查主体与连接点。必要时用 `--crop-anchor 0.5 1` 调整归一化锚点或用 `--photo-share` 调整照片占比（.55–.65）。不能为了比例裁掉关键主体。
-
-2. 从真实到达照片下缘的道路、水面、阶梯等结构出发，用 `--idea` 说明准确接续与一个互动，没有合适结构时先改裁切。中文句子未指定时写地名，诗句出处由使用者或助手查证。
-
-```bash
-PYTHON quickstart.py poster photo.jpg --location "赛里木湖" --caption "赛里木湖" --idea "从下缘真实结构准确延续，在纸上完成一个具体互动" --out work/my-poster
-```
-
-查看 `poster.png` 的连接、文字与人物支撑，失败则调整意图后显式加 `--overwrite` 重试。程序重新贴回上方缩放裁切后的原照片，报告差值为零；这不能称为原分辨率无损，也不保证生成区自动融合。
-
-3. **鼠标圈选水面**，无需写 JSON。
-
-```bash
-PYTHON quickstart.py select work/my-poster/poster.png --out work/my-poster
-```
-
-打开 `water-mask-editor.html`，沿水面逐点点击并闭合；扣除挡在水前的树林、人物、岸线和文字；点两下画流向。分别保存 `water_mask.png`、`motion.json` 到同一个任务目录。页面离线运行、不上传图片。
-
-4. **导出视频**。
-
-```bash
-PYTHON quickstart.py animate work/my-poster/poster.png --out work/my-poster
-```
-
-自动导出 `poster_3s.mp4` 并检查24 fps、72帧、3秒、无声、完整解码和运动指标。还要完整看一次：数值检查不能保证视觉自然。最终使用 `poster.png` 与 `poster_3s.mp4`，无需发布过程文件。MP4 是转换 Live Photo 的素材，工具不生成原生 Live Photo。
-
-## 作为 Skill 安装
-
-可下载新版 Release 的独立 Skill ZIP（只含核心 Skill，不含命令行与示例），或把 [skills/create-second-world-posters](skills/create-second-world-posters) 整个目录添加到宿主 Skill 安装入口。核心包不硬编码私人目录，依赖与凭据来自当前进程。
-
-公开包 frontmatter 包含 name、description、version，符合 AgentDock 规范；只接受前两项的宿主可以删除 version 行，正文版本说明保留。`run.py` 通过 stdin JSON 提供 status、prepare、poster、select_motion、animate、check_pair、audit_motion。见 [SKILL.md](skills/create-second-world-posters/SKILL.md) 与 [接口说明](skills/create-second-world-posters/references/providers.md)。
-
-## 验证和限制
-
-```bash
-PYTHON -B -m unittest discover -s tests -v
-```
-
-测试包含实际视频编码、固定区域与覆盖保护，以及图片服务的源照片恢复、错误处理和凭据保护。浏览器操作与示例验证记录见 [docs/VALIDATION.md](docs/VALIDATION.md)。公开示例不使用用户私有旅行照片。
-
-当前水流沿一个恒定方向，弯河、多向流和窄水带可能不适合；没有自动语义分割。错误选区会导致错误区域运动。固定区域的原始帧像素不变，视频编码仍可能带来轻微像素差。新视频生成项目尚未集成。
-
-代码与文档采用 [Apache-2.0](LICENSE)；示例照片另有授权，见 [来源说明](examples/sayram/ATTRIBUTION.md)。服务使用遵守对应平台条款。
+代码与文档采用 [Apache-2.0](LICENSE)；示例原片的授权见 [来源说明](examples/sayram/ATTRIBUTION.md)。
