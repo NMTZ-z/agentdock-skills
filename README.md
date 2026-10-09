@@ -77,7 +77,7 @@ PYTHON quickstart.py animate work/my-poster/poster.png --out work/my-poster
 
 ## 作为 Skill 安装
 
-把 [skills/create-second-world-posters](skills/create-second-world-posters) 整个目录添加到宿主 Skill 安装入口。核心包不硬编码私人目录，依赖与凭据来自当前进程。
+可下载新版 Release 的独立 Skill ZIP（只含核心 Skill，不含命令行与示例），或把 [skills/create-second-world-posters](skills/create-second-world-posters) 整个目录添加到宿主 Skill 安装入口。核心包不硬编码私人目录，依赖与凭据来自当前进程。
 
 公开包 frontmatter 包含 name、description、version，符合 AgentDock 规范；只接受前两项的宿主可以删除 version 行，正文版本说明保留。`run.py` 通过 stdin JSON 提供 status、prepare、poster、select_motion、animate、check_pair、audit_motion。见 [SKILL.md](skills/create-second-world-posters/SKILL.md) 与 [接口说明](skills/create-second-world-posters/references/providers.md)。
 
