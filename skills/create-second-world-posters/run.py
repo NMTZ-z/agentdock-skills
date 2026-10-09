@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""Portable JSON entry point. No network access or automatic installation."""
+"""Portable JSON entry point. Optional poster upload; no automatic installation."""
 import importlib.util
+import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -16,24 +18,42 @@ def execute(data):
         dependencies = {name: importlib.util.find_spec(name) is not None
                         for name in ('numpy', 'PIL', 'scipy')}
         dependencies.update({name: shutil.which(name) is not None for name in ('ffmpeg', 'ffprobe')})
-        return {'ok': True, 'skill': 'create-second-world-posters', 'version': '1.0.0',
+        return {'ok': True, 'skill': 'create-second-world-posters', 'version': '1.1.0',
                 'ready': all(dependencies.values()), 'dependencies': dependencies,
-                'capabilities': ['design-guidance', 'masked-water-transport', 'pair-check', 'motion-audit'],
-                'limits': ['External image editing tool required for poster creation',
+                'poster_ready': dependencies['PIL'] and bool(os.environ.get('SENSENOVA_API_KEY')),
+                'missing_poster_configuration': [] if os.environ.get('SENSENOVA_API_KEY') else ['SENSENOVA_API_KEY'],
+                'capabilities': ['design-guidance', 'sensenova-poster', 'water-mask-picker', 'masked-water-transport', 'pair-check', 'motion-audit'],
+                'limits': ['Poster generation uploads the prepared photo canvas to the configured SenseNova service; visual review required',
                            '2D texture motion; no native Live Photo or video model']}
+    if action in ('prepare', 'poster', 'select_motion'):
+        script = 'motion_picker.py' if action == 'select_motion' else 'poster_tools.py'
+        response = subprocess.run([sys.executable, '-B', str(ROOT/'scripts'/script)],
+                                  input=json.dumps(data), capture_output=True, text=True)
+        try:
+            result = json.loads(response.stdout)
+        except (ValueError, TypeError):
+            return {'ok': False, 'code': 'WORKER_FAILED', 'message': 'Worker could not start or returned invalid JSON; check dependencies.'}
+        result['skill_action'] = action
+        return result
     commands = {
         'animate': ('animate_water_transport.py', ('image', 'video', 'config')),
         'check_pair': ('check_pair.py', ('image', 'video')),
         'audit_motion': ('audit_motion.py', ('video',)),
     }
     if action not in commands:
-        raise ValueError('Unknown skill_action; use status, animate, check_pair or audit_motion')
+        raise ValueError('Unknown skill_action; use status, prepare, poster, select_motion, animate, check_pair or audit_motion')
     script, required = commands[action]
     for key in required:
         if not isinstance(data.get(key), str) or not data[key].strip():
             raise ValueError(f'{key} must be a nonempty path string')
     args = [sys.executable, '-B', str(ROOT/'scripts'/script)]
     if action == 'animate':
+        config = json.loads(Path(data['config']).read_text(encoding='utf-8'))
+        if not isinstance(config, dict):
+            raise ValueError('Motion config must be a JSON object')
+        expected = config.get('image_sha256')
+        if expected and hashlib.sha256(Path(data['image']).read_bytes()).hexdigest() != expected:
+            return {'ok':False,'code':'STALE_MOTION_SELECTION','message':'Poster changed after selection; select the water mask again.'}
         args += [data['image'], data['video'], '--config', data['config']]
         if data.get('report'): args += ['--report', data['report']]
         if data.get('overwrite') is True: args += ['--overwrite']

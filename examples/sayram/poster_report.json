@@ -1,0 +1,29 @@
+{
+  "input_size": [
+    1280,
+    853
+  ],
+  "output_size": [
+    1152,
+    1536
+  ],
+  "photo_rows": 891,
+  "photo_share": 0.580078125,
+  "cropped_area_fraction": 0.1383694839192221,
+  "crop_anchor": [
+    0.5,
+    1
+  ],
+  "resampling": "Lanczos, uniform scaling then crop",
+  "preservation": "Final photo region exactly reuses the prepared scaled/cropped source; not original-resolution losslessness.",
+  "model": "sensenova-u1.5-lite",
+  "location_supplied_by_user": "赛里木湖",
+  "caption": "赛里木湖",
+  "preserved_photo_max_difference": 0,
+  "visual_review_required": [
+    "connection alignment",
+    "caption",
+    "figure support",
+    "crop subjects"
+  ]
+}
