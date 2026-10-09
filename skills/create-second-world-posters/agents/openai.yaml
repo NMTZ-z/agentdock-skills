@@ -1,4 +1,4 @@
 interface:
-  display_name: "Coco · 第二世界旅行海报"
+  display_name: "Travel in the Second World"
   short_description: "实拍自然延伸为纸上世界，独立生成竖版海报与三秒局部动态视频"
   default_prompt: "使用 $create-second-world-posters，把这张旅行照片做成第二世界海报，并交付修改后的图片和三秒局部动态视频。"

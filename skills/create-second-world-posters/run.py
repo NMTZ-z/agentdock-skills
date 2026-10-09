@@ -18,7 +18,7 @@ def execute(data):
         dependencies = {name: importlib.util.find_spec(name) is not None
                         for name in ('numpy', 'PIL', 'scipy')}
         dependencies.update({name: shutil.which(name) is not None for name in ('ffmpeg', 'ffprobe')})
-        return {'ok': True, 'skill': 'create-second-world-posters', 'version': '1.1.0',
+        return {'ok': True, 'skill': 'create-second-world-posters', 'version': '1.1.1',
                 'ready': all(dependencies.values()), 'dependencies': dependencies,
                 'poster_ready': dependencies['PIL'] and bool(os.environ.get('SENSENOVA_API_KEY')),
                 'missing_poster_configuration': [] if os.environ.get('SENSENOVA_API_KEY') else ['SENSENOVA_API_KEY'],
